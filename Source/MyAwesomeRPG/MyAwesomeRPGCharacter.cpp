@@ -52,6 +52,12 @@ AMyAwesomeRPGCharacter::AMyAwesomeRPGCharacter()
 
 void AMyAwesomeRPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AMyAwesomeRPGCharacter::StartSprint);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &AMyAwesomeRPGCharacter::StopSprint);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMyAwesomeRPGCharacter::PerformAttack);
+
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
@@ -130,4 +136,27 @@ void AMyAwesomeRPGCharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void AMyAwesomeRPGCharacter::StartSprint()
+{
+	bIsSprinting = true;
+	GetCharacterMovement()->MaxWalkSpeed = 1200.f;
+}
+
+void AMyAwesomeRPGCharacter::StopSprint()
+{
+	bIsSprinting = false;
+	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+}
+
+void AMyAwesomeRPGCharacter::PerformAttack()
+{
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		if (AttackMontage)  // 이 변수는 블루프린트에서 연결할 거임
+		{
+			AnimInstance->Montage_Play(AttackMontage, 1.2f);
+		}
+	}
 }
