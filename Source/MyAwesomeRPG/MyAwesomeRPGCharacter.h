@@ -43,12 +43,22 @@ protected:
 
 public:
 
-	/** Constructor */
-	AMyAwesomeRPGCharacter();	
+	// 공격 이펙트
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	class UParticleSystem* AttackEffect;
 
-	/** 달리기, 공격 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	class USoundBase* AttackSound;
+
+	// 카메라 흔들림
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> AttackCameraShake;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	class UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	bool bIsSprinting = false;
 
 	UFUNCTION()
 	void StartSprint();
