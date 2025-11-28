@@ -152,11 +152,37 @@ void AMyAwesomeRPGCharacter::StopSprint()
 
 void AMyAwesomeRPGCharacter::PerformAttack()
 {
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	// 1. 파티클 이펙트 (검기)
+	if (AttackEffect)
 	{
-		if (AttackMontage)  // 이 변수는 블루프린트에서 연결할 거임
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			AttackEffect,
+			GetActorLocation() + GetActorForwardVector() * 100.f,
+			GetActorRotation()
+		);
+	}
+
+	// 2. 사운드
+	if (AttackSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			AttackSound,
+			GetActorLocation()
+		);
+	}
+
+	// 3. 카메라 흔들림
+	if (AttackCameraShake && GetController())
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC && PC->PlayerCameraManager)
 		{
-			AnimInstance->Montage_Play(AttackMontage, 1.2f);
+			PC->PlayerCameraManager->StartCameraShake(AttackCameraShake);
 		}
 	}
+
+	// 4. 캐릭터 살짝 밀기 (힘 전달)
+	LaunchCharacter(GetActorForwardVector() * 300.f, false, true);
 }
